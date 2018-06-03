@@ -7,7 +7,7 @@ Use at your own risk.
 
 ## Install
 Use pip to install the library
-```python
+```commandline
 pip install zi_dct0
 ```
 
@@ -33,5 +33,5 @@ After setup all the configuration, then run the calculation
 ```
 whether `p_t` is the price at time *t*
 
-from event_type we conclude if is a buy/sell signal `core.algo.is_buy_signaled(event_type, trade_method)` or `core.algo.is_sell_signaled(event_type, trade_method)`
+from `event_type` we conclude if is a buy/sell signal `core.algo.is_buy_signaled(event_type, trade_method)` or `core.algo.is_sell_signaled(event_type, trade_method)`
 
