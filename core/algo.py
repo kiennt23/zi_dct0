@@ -36,14 +36,11 @@ def config_trade_method(trade_method):
 
 def zi_dct0(p_t):
     global mode, p_ext, delta_p
-    # date = datetime.fromtimestamp(timestamp / 1000, tz=utc)
-    # sing_date = date.astimezone(sing_tz)
     if mode == DCEventType.UPTURN:
         if p_t <= p_ext * (1.0 - delta_p):
             logger.debug('p_ext={} p_t={}'.format(p_ext, p_t))
             mode = DCEventType.DOWNTURN
             p_ext = p_t
-            # logger.info('At {} BUY TF mode={} p_t={}'.format(sing_date.strftime(fmt), str(mode.name), p_t))
             return mode
         else:
             p_ext = max([p_ext, p_t])
@@ -55,9 +52,7 @@ def zi_dct0(p_t):
             logger.debug('p_ext={} p_t={}'.format(p_ext, p_t))
             mode = DCEventType.UPTURN
             p_ext = p_t
-            # logger.info('At {} SELL TF mode={} p_t={}'.format(sing_date.strftime(fmt), str(mode.name), p_t))
             return mode
-
         else:
             p_ext = min([p_ext, p_t])
             logger.debug('p_ext={} p_t={}'.format(p_ext, p_t))
