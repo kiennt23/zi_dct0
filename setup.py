@@ -11,11 +11,11 @@ setuptools.setup(
     description="ZI DCT0 implementation in python",
     long_description="ZI DCT0 implementation in python",
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/kiennt23/price_watcher.git",
+    url="https://github.com/kiennt23/zi_dct0.git",
     packages=setuptools.find_packages(),
     classifiers=(
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ),
 )
