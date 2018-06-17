@@ -76,9 +76,3 @@ class ZI_DCT0:
         sell_signaled = (TradeStrategy.TF == self.config.strategy and DCEventType.DOWNTURN == self.current_event) or (
                 TradeStrategy.CT == self.config.strategy and DCEventType.UPTURN == self.current_event)
         return sell_signaled
-
-
-class Position:
-    def __init__(self, price):
-        self.price = price
-
