@@ -34,6 +34,7 @@ class ZI_DCT0:
         self.logger = logger
         self.config = config
         self.mode = config.initial_mode
+        self.current_event = DCEventType.OVERSHOOT
         self.p_ext = config.initial_p_ext
         pass
 
@@ -45,33 +46,35 @@ class ZI_DCT0:
             if p_t <= self.p_ext * (1.0 - self.config.delta_p):
                 self.logger.debug('initial_p_ext={} p_t={}'.format(self.p_ext, p_t))
                 self.mode = DCEventType.DOWNTURN
+                self.current_event = DCEventType.DOWNTURN
                 self.p_ext = p_t
-                return self.mode
             else:
                 self.p_ext = max([self.p_ext, p_t])
                 self.logger.debug('initial_p_ext={} p_t={}'.format(self.p_ext, p_t))
-                return DCEventType.OVERSHOOT
+                self.current_event = DCEventType.OVERSHOOT
 
         else:  # initial_mode is DOWNTURN
             if p_t >= self.p_ext * (1.0 + self.config.delta_p):
                 self.logger.debug('initial_p_ext={} p_t={}'.format(self.p_ext, p_t))
                 self.mode = DCEventType.UPTURN
+                self.current_event = DCEventType.UPTURN
                 self.p_ext = p_t
-                return self.mode
             else:
                 self.p_ext = min([self.p_ext, p_t])
                 self.logger.debug('initial_p_ext={} p_t={}'.format(self.p_ext, p_t))
-                return DCEventType.OVERSHOOT
+                self.current_event = DCEventType.OVERSHOOT
+
+        return self.current_event
         pass
 
     def is_buy_signaled(self):
-        buy_signaled = (TradeStrategy.TF == self.config.strategy and DCEventType.UPTURN == self.mode) or (
-            TradeStrategy.CT == self.config.strategy and DCEventType.DOWNTURN == self.mode)
+        buy_signaled = (TradeStrategy.TF == self.config.strategy and DCEventType.UPTURN == self.current_event) or (
+            TradeStrategy.CT == self.config.strategy and DCEventType.DOWNTURN == self.current_event)
         return buy_signaled
 
     def is_sell_signaled(self):
-        sell_signaled = (TradeStrategy.TF == self.config.strategy and DCEventType.DOWNTURN == self.mode) or (
-                TradeStrategy.CT == self.config.strategy and DCEventType.UPTURN == self.mode)
+        sell_signaled = (TradeStrategy.TF == self.config.strategy and DCEventType.DOWNTURN == self.current_event) or (
+                TradeStrategy.CT == self.config.strategy and DCEventType.UPTURN == self.current_event)
         return sell_signaled
 
 
