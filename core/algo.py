@@ -42,30 +42,26 @@ class ZI_DCT0:
         if self.config is None:
             self.logger.error('No configuration')
             return
+        self.logger.debug('p_ext={} p_t={}'.format(self.p_ext, p_t))
         if self.mode == DCEventType.UPTURN:
             if p_t <= self.p_ext * (1.0 - self.config.delta_p):
-                self.logger.debug('initial_p_ext={} p_t={}'.format(self.p_ext, p_t))
                 self.mode = DCEventType.DOWNTURN
                 self.current_event = DCEventType.DOWNTURN
                 self.p_ext = p_t
             else:
                 self.p_ext = max([self.p_ext, p_t])
-                self.logger.debug('initial_p_ext={} p_t={}'.format(self.p_ext, p_t))
                 self.current_event = DCEventType.OVERSHOOT
 
         else:  # initial_mode is DOWNTURN
             if p_t >= self.p_ext * (1.0 + self.config.delta_p):
-                self.logger.debug('initial_p_ext={} p_t={}'.format(self.p_ext, p_t))
                 self.mode = DCEventType.UPTURN
                 self.current_event = DCEventType.UPTURN
                 self.p_ext = p_t
             else:
                 self.p_ext = min([self.p_ext, p_t])
-                self.logger.debug('initial_p_ext={} p_t={}'.format(self.p_ext, p_t))
                 self.current_event = DCEventType.OVERSHOOT
 
         return self.current_event
-        pass
 
     def is_buy_signaled(self):
         buy_signaled = (TradeStrategy.TF == self.config.strategy and DCEventType.UPTURN == self.current_event) or (
