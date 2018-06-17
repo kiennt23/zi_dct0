@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zi_dct0",
-    version="0.0.4",
+    version="0.0.5",
     author="Kien Nguyen",
     author_email="kiennt23@gmail.com",
     description="ZI DCT0 implementation in python",
