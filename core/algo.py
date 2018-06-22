@@ -36,9 +36,13 @@ class ZI_DCT0:
         self.mode = config.initial_mode
         self.current_event = DCEventType.OVERSHOOT
         self.p_ext = config.initial_p_ext
+        self.t_start_dc = 0
+        self.t_end_dc = 0
+        self.t_start_os = 0
+        self.t_end_os = 0
         pass
 
-    def observe(self, p_t):
+    def observe(self, p_t, t=0):
         if self.config is None:
             self.logger.error('No configuration')
             return
@@ -48,8 +52,13 @@ class ZI_DCT0:
                 self.mode = DCEventType.DOWNTURN
                 self.current_event = DCEventType.DOWNTURN
                 self.p_ext = p_t
+                self.t_end_dc = t
+                self.t_start_os = t + 1
             else:
-                self.p_ext = max([self.p_ext, p_t])
+                if self.p_ext < p_t:
+                    self.p_ext = p_t
+                    self.t_start_dc = t
+                    self.t_end_os = t - 1
                 self.current_event = DCEventType.OVERSHOOT
 
         else:  # initial_mode is DOWNTURN
@@ -57,8 +66,13 @@ class ZI_DCT0:
                 self.mode = DCEventType.UPTURN
                 self.current_event = DCEventType.UPTURN
                 self.p_ext = p_t
+                self.t_end_dc = t
+                self.t_start_os = t + 1
             else:
-                self.p_ext = min([self.p_ext, p_t])
+                if self.p_ext > p_t:
+                    self.p_ext = p_t
+                    self.t_start_dc = t
+                    self.t_end_os = t - 1
                 self.current_event = DCEventType.OVERSHOOT
 
         return self.current_event
