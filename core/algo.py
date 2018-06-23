@@ -36,6 +36,7 @@ class ZI_DCT0:
         self.mode = config.initial_mode
         self.current_event = DCEventType.OVERSHOOT
         self.p_ext = config.initial_p_ext
+        self.p_start_dc = 0
         self.t_start_dc = 0
         self.t_end_dc = 0
         self.t_start_os = 0
@@ -49,33 +50,34 @@ class ZI_DCT0:
         self.logger.debug('p_ext={} p_t={}'.format(self.p_ext, p_t))
         if self.mode == DCEventType.UPTURN:
             if p_t <= self.p_ext * (1.0 - self.config.delta_p):
-                self.mode = DCEventType.DOWNTURN
-                self.current_event = DCEventType.DOWNTURN
-                self.p_ext = p_t
-                self.t_end_dc = t
-                self.t_start_os = t + 1
+                self.turn(p_t, t, DCEventType.DOWNTURN)
             else:
                 if self.p_ext < p_t:
-                    self.p_ext = p_t
-                    self.t_start_dc = t
-                    self.t_end_os = t - 1
+                    self.shoot(p_t, t)
                 self.current_event = DCEventType.OVERSHOOT
 
-        else:  # initial_mode is DOWNTURN
+        else:  # mode is DOWNTURN
             if p_t >= self.p_ext * (1.0 + self.config.delta_p):
-                self.mode = DCEventType.UPTURN
-                self.current_event = DCEventType.UPTURN
-                self.p_ext = p_t
-                self.t_end_dc = t
-                self.t_start_os = t + 1
+                self.turn(p_t, t, DCEventType.UPTURN)
             else:
                 if self.p_ext > p_t:
-                    self.p_ext = p_t
-                    self.t_start_dc = t
-                    self.t_end_os = t - 1
+                    self.shoot(p_t, t)
                 self.current_event = DCEventType.OVERSHOOT
 
         return self.current_event
+
+    def shoot(self, p_t, t):
+        self.p_ext = p_t
+        self.t_start_dc = t
+        self.t_end_os = t - 1
+
+    def turn(self, p_t, t, dc_event_type):
+        self.mode = dc_event_type
+        self.current_event = dc_event_type
+        self.p_start_dc = self.p_ext
+        self.p_ext = p_t
+        self.t_end_dc = t
+        self.t_start_os = t + 1
 
     def is_buy_signaled(self):
         buy_signaled = (TradeStrategy.TF == self.config.strategy and DCEventType.UPTURN == self.current_event) or (
